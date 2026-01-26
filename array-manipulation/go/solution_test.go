@@ -18,7 +18,7 @@ func TestArrayManipulation(t *testing.T) {
 
 func TestArrayManipulationLarge(t *testing.T) {
 	expected := int64(10000000)
-	results := arrayManipulation(1000000, largeQueries)
+	results := arrayManipulation(10000000, largeQueries)
 	if results != expected {
 		t.Errorf("Expected %d, got %d", expected, results)
 	}
@@ -26,7 +26,7 @@ func TestArrayManipulationLarge(t *testing.T) {
 
 func BenchmarkArrayManipulation(b *testing.B) {
 	for b.Loop() {
-		arrayManipulation(1000000, largeQueries[:10000])
+		arrayManipulation(10000000, largeQueries[:10000])
 	}
 }
 
