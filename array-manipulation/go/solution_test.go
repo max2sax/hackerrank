@@ -3,14 +3,16 @@ package array_manipulation
 import "testing"
 
 func TestArrayManipulation(t *testing.T) {
-	n := int32(5)
+	n := int32(10)
 	queries := [][]int32{
 		{1, 2, 100},
 		{2, 5, 100},
 		{3, 4, 100},
+		{1, 9, 100},
+		{6, 7, 200},
 	}
-	expected := int64(200)
-	result := arrayManipulation(n, queries)
+	expected := int64(500)
+	result := arrayManipulationLinkedLis(n, queries)
 	if result != expected {
 		t.Errorf("Expected %d, got %d", expected, result)
 	}
@@ -27,6 +29,12 @@ func TestArrayManipulationLarge(t *testing.T) {
 func BenchmarkArrayManipulation(b *testing.B) {
 	for b.Loop() {
 		arrayManipulation(10000000, largeQueries[:10000])
+	}
+}
+
+func BenchmarkArrayManipulationNew(b *testing.B) {
+	for b.Loop() {
+		arrayManipulationLinkedLis(10000000, largeQueries)
 	}
 }
 
