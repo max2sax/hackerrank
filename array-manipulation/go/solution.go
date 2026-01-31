@@ -83,34 +83,64 @@ func arrayManipulationLinkedLis(n int32, queries [][]int32) int64 {
 		queryStart := int64(query[0])
 		queryEnd := int64(query[1])
 		querySum := int64(query[2])
+
+		if queryEnd < newQueries.start {
+			// insert before the current node
+			newNode := &node{
+				start: queryStart,
+				end:   queryEnd,
+				value: querySum,
+				next:  newQueries,
+			}
+			newQueries = newNode
+			continue
+		}
+		if queryEnd == newQueries.start {
+			// extend the current node
+			newQueries.start = queryStart
+			newQueries.value += querySum
+			continue
+		}
+
 		curNode := newQueries
-		prevNode := (*node)(nil)
+		prevNode := newQueries
+	nodeloop:
 		for curNode != nil {
+
 			curStart := curNode.start
 			curEnd := curNode.end
 
 			// let's just handle all cases explicitly:
-			switch {
-			// query starts before current node and ends before the current node
-			case queryStart < curStart && queryEnd < curStart:
-			// query starts before the current node and ends on the current node
-			case queryStart < curStart && queryEnd == curStart:
-			case queryStart < curStart && queryEnd > curEnd:
-			case queryStart == curStart && queryEnd < curEnd:
-			case queryStart == curStart && queryEnd == curEnd:
-			case queryStart == curStart && queryEnd > curEnd:
-			case queryStart > curStart && queryEnd < curEnd:
-			case queryStart > curStart && queryEnd == curEnd:
-			case queryStart > curStart && queryEnd > curEnd:
-			case queryStart > curEnd && queryEnd < curNode.next.start:
-			case queryStart > curEnd && queryEnd == curNode.next.start:
-			case queryStart > curEnd && queryEnd > curNode.next.start:
-			}
-			// query starts before current node, doesn't matter where it ends.
-			if queryStart < curStart {
+			if queryEnd < curStart {
+				// query starts before  node and ends before the current node
+				// create a new node and insert it before the current node
 				newNode := &node{
 					start: queryStart,
-					end:   curNode.start - 1,
+					end:   queryEnd,
+					value: querySum,
+					next:  curNode,
+				}
+				newQueries = newNode
+				break nodeloop
+			}
+
+			if queryEnd < curStart && queryStart > prevNode.end {
+				// query starts after previous node and ends before current node
+				newNode := &node{
+					start: queryStart,
+					end:   queryEnd,
+					value: querySum,
+					next:  curNode,
+				}
+				prevNode.next = newNode
+				break nodeloop
+			}
+
+			// query starts before the current node and ends on the current node
+			if queryStart < curStart && queryEnd == curStart {
+				newNode := &node{
+					start: queryStart,
+					end:   queryEnd - 1,
 					value: querySum,
 					next:  curNode,
 				}
@@ -119,20 +149,55 @@ func arrayManipulationLinkedLis(n int32, queries [][]int32) int64 {
 				} else {
 					prevNode.next = newNode
 				}
-				// if queryEnd <= curEnd {
-				// 	// query ends before current node
-				// 	newNode.end = queryEnd
-				// 	break
-				// }
+			}
+
+			// check if the query starts inside the current node
+			if queryStart == curStart {
+				if curEnd == curStart && queryEnd == curStart {
+					// single point node
+					curNode.value += querySum
+					break
+				}
+				if curEnd == curStart {
+					curNode.value += querySum
+					queryStart++
+					continue
+				}
+				// currentstart != currentend
+				if queryEnd < curEnd {
+					// left node
+					leftNode := &node{
+						start: queryStart,
+						end:   queryEnd,
+						value: curNode.value + querySum,
+						next:  curNode.next,
+					}
+					// right node
+					curNode.start = queryEnd + 1
+					// link left node
+					if prevNode == nil {
+						newQueries = leftNode
+					} else {
+						prevNode.next = leftNode
+					}
+					leftNode.next = curNode
+					break
+				}
+				if queryEnd == curEnd {
+					curNode.value += querySum
+					break
+				}
+				// queryEnd > curEnd
+				curNode.value += querySum
 				// set new query start for next iteration
-				queryStart = curStart
-				prevNode = newNode
+				queryStart = curEnd + 1
+				// move to next node
+				prevNode = curNode
+				curNode = curNode.next
 				continue
 			}
 
-			// if the query is entirely within the current node
 			if queryStart > curStart && queryStart <= curEnd {
-				// create 3 nodes
 				// left node
 				curNode.end = queryStart - 1
 				// middle node
@@ -170,56 +235,56 @@ func arrayManipulationLinkedLis(n int32, queries [][]int32) int64 {
 				continue
 			}
 
-			// query starts after the current node and before the next node
-			// then insert after the current node
-			if queryStart > curEnd && (curNode.next == nil || queryEnd < curNode.next.start) {
-				newNode := &node{
-					start: queryStart,
-					end:   queryEnd,
-					value: querySum,
-					next:  curNode.next,
-				}
-				curNode.next = newNode
-				curNode = newNode
-				break
-			}
+			// // query starts after the current node and before the next node
+			// // then insert after the current node
+			// if queryStart > curEnd && (curNode.next == nil || queryEnd < curNode.next.start) {
+			// 	newNode := &node{
+			// 		start: queryStart,
+			// 		end:   queryEnd,
+			// 		value: querySum,
+			// 		next:  curNode.next,
+			// 	}
+			// 	curNode.next = newNode
+			// 	curNode = newNode
+			// 	break
+			// }
 
-			// query starts at the same spot current node and ends anywhere
-			if queryStart == curStart {
-				curNode.value += querySum
-				// set new query start for next iteration
-				queryStart++
-				// stay on the current node,
-				// the query will start after this and be handled accordingly
-				continue
-			}
+			// // query starts at the same spot current node and ends anywhere
+			// if queryStart == curStart {
+			// 	curNode.value += querySum
+			// 	// set new query start for next iteration
+			// 	queryStart++
+			// 	// stay on the current node,
+			// 	// the query will start after this and be handled accordingly
+			// 	continue
+			// }
 
-			// query starts after current node
-			if queryStart > curEnd {
-				// move to next node
-				prevNode = curNode
-				curNode = curNode.next
-				continue
-			}
+			// // query starts after current node
+			// if queryStart > curEnd {
+			// 	// move to next node
+			// 	prevNode = curNode
+			// 	curNode = curNode.next
+			// 	continue
+			// }
 
-			// query starts inside current node and ends after current node
-			// not sure if this is right or covered by another case
-			if queryStart > curStart {
-				curNode.end = queryStart - 1
-				newNode := &node{
-					// middle node
-					start: queryStart,
-					end:   curEnd,
-					value: curNode.value + querySum,
-					next:  curNode.next,
-				}
-				curNode.next = newNode
-				// set new query start for next iteration
-				queryStart = curEnd + 1
-			}
-			// move to next node
-			prevNode = curNode
-			curNode = curNode.next
+			// // query starts inside current node and ends after current node
+			// // not sure if this is right or covered by another case
+			// if queryStart > curStart {
+			// 	curNode.end = queryStart - 1
+			// 	newNode := &node{
+			// 		// middle node
+			// 		start: queryStart,
+			// 		end:   curEnd,
+			// 		value: curNode.value + querySum,
+			// 		next:  curNode.next,
+			// 	}
+			// 	curNode.next = newNode
+			// 	// set new query start for next iteration
+			// 	queryStart = curEnd + 1
+			// }
+			// // move to next node
+			// prevNode = curNode
+			// curNode = curNode.next
 		}
 	}
 	count := 0
