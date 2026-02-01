@@ -303,5 +303,70 @@ func arrayManipulationLinkedLis(n int32, queries [][]int32) int64 {
 }
 
 func arrayManipulationAI(n int32, queries [][]int32) int64 {
-	return 0
+	// lets see what AI comes up with,
+	// so far I've seen something about a difference array,
+	// what could that be?
+	//
+	// construct a difference array
+	arr := make([]int64, n+2)
+	for _, query := range queries {
+		if query[0] < 1 {
+			log.Printf("query index is out of bounds")
+		}
+		startIndex := query[0]
+		endIndex := query[1]
+		value := int64(query[2])
+
+		arr[startIndex] += value
+		arr[endIndex] -= value
+	}
+
+	max := int64(0)
+	// then loop through array
+	for i := range n {
+		// perform operations
+		sum := arr[i]
+		if sum > max {
+			max = sum
+		}
+	}
+
+	return max
+}
+
+func arrayManipulationWithDifferenceArray(n int32, queries [][]int32) int64 {
+	// implement the difference array approach
+	diffArr := make([]int64, n+1)
+	arr := make([]int64, n)
+	// perform operations
+	for i, query := range queries {
+		a := query[0]
+		b := query[1]
+		k := query[2]
+		for i := a - 1; i < b; i++ {
+			arr[i] += int64(k)
+		}
+		log.Printf("query[%d]: %v: %v\n", i, query, arr)
+	}
+
+	log.Println("Start: ", diffArr)
+	for i, query := range queries {
+		start := query[0] - 1
+		end := query[1]
+		value := int64(query[2])
+		diffArr[start] += value
+		diffArr[end] -= value
+		log.Printf("query[%d]: %v: %v\n", i, query, diffArr)
+	}
+
+	max := int64(0)
+	current := int64(0)
+	for i := int32(0); i < n; i++ {
+		current += diffArr[i]
+		if current > max {
+			max = current
+		}
+	}
+
+	return max
 }

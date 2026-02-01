@@ -2,6 +2,22 @@ package array_manipulation
 
 import "testing"
 
+func TestDifferenceArrayManipulation(t *testing.T) {
+	n := int32(10)
+	queries := [][]int32{
+		{1, 2, 100},
+		{2, 5, 100},
+		{3, 4, 100},
+		{1, 9, 100},
+		{6, 7, 200},
+	}
+	expected := int64(500)
+	result := arrayManipulationWithDifferenceArray(n, queries)
+	if result != expected {
+		t.Errorf("Expected %d, got %d", expected, result)
+	}
+}
+
 func TestArrayManipulation(t *testing.T) {
 	n := int32(10)
 	queries := [][]int32{
@@ -20,7 +36,7 @@ func TestArrayManipulation(t *testing.T) {
 
 func TestArrayManipulationLarge(t *testing.T) {
 	expected := int64(10000000)
-	results := arrayManipulation(10000000, largeQueries)
+	results := arrayManipulationAI(10000000, largeQueries)
 	if results != expected {
 		t.Errorf("Expected %d, got %d", expected, results)
 	}
