@@ -21,19 +21,57 @@ func TestTwoStacks(t *testing.T) {
 		})
 	}
 }
+
 func TestNewTwoStacks(t *testing.T) {
 	maxT := len(tests)
 
-	maxT = 5
-	for i := 4; i < maxT; i++ {
+	// maxT = 50
+	for i := 0; i < maxT; i++ {
 		test := tests[i]
-		tName := fmt.Sprintf("%d:  ", i)
+		tName := fmt.Sprintf("%d:max%d ", i, test.maxSum)
 		t.Run(tName, func(t *testing.T) {
 			expected := outputs01[i]
 			result := twoStacksNew(test.maxSum, test.a, test.b)
 			if result != expected {
 				t.Errorf("twoStacksNew(%d, \n%v, \n%v) \n= %d; want %d", test.maxSum, test.a, test.b, result, expected)
 			}
+			t.Logf("twoStacksNew(%d, \n%v, \n%v) \n= %d; want %d", test.maxSum, test.a, test.b, result, expected)
+		})
+	}
+}
+
+func TestTwoStacksArray(t *testing.T) {
+	maxT := len(tests)
+
+	// maxT = 50
+	for i := 0; i < maxT; i++ {
+		test := tests[i]
+		tName := fmt.Sprintf("%d:max%d ", i, test.maxSum)
+		t.Run(tName, func(t *testing.T) {
+			expected := outputs01[i]
+			result := twoStacksArrayOfSums(test.maxSum, test.a, test.b)
+			if result != expected {
+				t.Errorf("twoStacksArrayOfSums(%d, \n%v, \n%v) \n= %d; want %d", test.maxSum, test.a, test.b, result, expected)
+			}
+			t.Logf("twoStacksArrayOfSums(%d, \n%v, \n%v) \n= %d; want %d", test.maxSum, test.a, test.b, result, expected)
+		})
+	}
+}
+
+func TestTwoStacksSlidingWindow(t *testing.T) {
+	maxT := len(tests)
+
+	// maxT = 50
+	for i := 0; i < maxT; i++ {
+		test := tests[i]
+		tName := fmt.Sprintf("%d:max%d ", i, test.maxSum)
+		t.Run(tName, func(t *testing.T) {
+			expected := outputs01[i]
+			result := twoStacksSlidingWindow(test.maxSum, test.a, test.b)
+			if result != expected {
+				t.Errorf("twoStacksSlidingWindow(%d, \n%v, \n%v) \n= %d; want %d", test.maxSum, test.a, test.b, result, expected)
+			}
+			t.Logf("twoStacksSlidingWindow(%d, \n%v, \n%v) \n= %d; want %d", test.maxSum, test.a, test.b, result, expected)
 		})
 	}
 }
