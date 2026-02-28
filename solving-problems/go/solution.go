@@ -113,7 +113,6 @@ func problemSolvingSubArrays(k int32, v []int32) int32 {
 			// too close, check next day
 			firstPair.end = t{i, v[i]}
 			problemGroups = append(problemGroups, firstPair)
-
 			firstPair.start = t{i + 1, v[i+1]}
 		}
 	}
