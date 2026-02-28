@@ -45,6 +45,9 @@ func makeChange(coins []int, target int) (numberOfWays int) {
 	//     for j := range dp[coin:] {
 	//         dp[int64(j)+coin] += dp[j]
 	//     }
+	// 		for j := coin; j < target; j++ {
+	// 			dp[j] = dp[j] + dp[j - coin]
+	// 		}
 	// }
 	// fmt.Println(dp)
 	// return dp[int64(target)]
